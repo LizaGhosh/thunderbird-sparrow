@@ -80,7 +80,7 @@
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
                 <a class="nav-link" href="/configure"><i class="fas fa-cog me-1"></i>Configure</a>
-                <a class="nav-link" href="/run_tests"><i class="fas fa-play me-1"></i>Run Tests</a>
+                <a class="nav-link" href="#" onclick="goToConfigureFirst()"><i class="fas fa-play me-1"></i>Run Tests</a>
                 <a class="nav-link" href="/results"><i class="fas fa-chart-bar me-1"></i>Results</a>
                 <a class="nav-link active" href="/voice_record"><i class="fas fa-microphone me-1"></i>Voice Record</a>
             </div>
@@ -522,6 +522,10 @@
         window.addEventListener('pagehide', function() {
             stopMicrophoneTest();
         });
+
+        function goToConfigureFirst() {
+            window.location.href = '/configure';
+        }
         
 
     </script>

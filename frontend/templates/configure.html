@@ -29,7 +29,7 @@
             </a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
-                <a class="nav-link" href="/run_tests"><i class="fas fa-play me-1"></i>Run Tests</a>
+                <a class="nav-link" href="#" onclick="goToConfigureFirst()"><i class="fas fa-play me-1"></i>Run Tests</a>
                 <a class="nav-link" href="/results"><i class="fas fa-chart-bar me-1"></i>Results</a>
                 <a class="nav-link" href="/voice_record"><i class="fas fa-microphone me-1"></i>Voice Record</a>
 
@@ -126,21 +126,7 @@
                             </div>
                         </form>
                         
-                        <!-- Run Test Button (shown after redirect from run_tests page) -->
-                        {% if request.args.get('redirect') == 'run_tests' %}
-                        <div class="row mt-3">
-                            <div class="col-12 text-center">
-                                <div class="alert alert-success">
-                                    <i class="fas fa-check-circle me-2"></i>
-                                    <strong>Configuration saved!</strong> You can now run your test.
-                                </div>
-                                <a href="/run_tests" class="btn btn-success btn-lg">
-                                    <i class="fas fa-play me-2"></i>
-                                    Go to Run Tests
-                                </a>
-                            </div>
-                        </div>
-                        {% endif %}
+                        <!-- Removed redundant Choose Test block: Save & Continue already redirects to run_tests -->
                     </div>
                 </div>
 
@@ -194,6 +180,10 @@
                 `;
             }
         });
+
+        function goToConfigureFirst() {
+            window.location.href = '/configure';
+        }
     </script>
 </body>
 </html>

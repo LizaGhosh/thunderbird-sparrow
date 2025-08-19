@@ -58,7 +58,11 @@
             <div class="col-md-10">
                 <div class="text-center mb-5">
                     <h2><i class="fas fa-play-circle me-2"></i>Choose Test Type</h2>
-                    <p class="lead text-muted">Select the type of test you want to run</p>
+                    <p class="lead text-muted">Select a test type to configure and run</p>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>New Flow:</strong> Click a test type to go to configuration first, then return here to run your test
+                    </div>
                 </div>
 
                 <div class="row">
@@ -228,12 +232,32 @@
         let selectedTest = null;
         let progressInterval = null;
 
-        function selectTest(testType) {
+        function goToConfigure(testType) {
             // Store the selected test type in sessionStorage
             sessionStorage.setItem('selectedTestType', testType);
             
             // Redirect to configure page first
             window.location.href = '/configure?redirect=run_tests';
+        }
+
+        function selectTest(testType) {
+            // Remove previous selection
+            document.querySelectorAll('.test-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select current card
+            if (testType === 'short_test') {
+                document.getElementById('short-test-card').classList.add('selected');
+                document.getElementById('selected-test-name').textContent = 'Short Test (3 entries each)';
+            } else {
+                document.getElementById('full-dataset-card').classList.add('selected');
+                document.getElementById('selected-test-name').textContent = 'Full Dataset (25 entries each)';
+            }
+            
+            selectedTest = testType;
+            document.getElementById('test-type-input').value = testType;
+            document.getElementById('execution-section').style.display = 'block';
         }
 
         function resetSelection() {

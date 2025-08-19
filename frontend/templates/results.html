@@ -57,7 +57,7 @@
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
                 <a class="nav-link" href="/configure"><i class="fas fa-cog me-1"></i>Configure</a>
-                <a class="nav-link" href="/run_tests"><i class="fas fa-play me-1"></i>Run Tests</a>
+                <a class="nav-link" href="#" onclick="goToConfigureFirst()"><i class="fas fa-play me-1"></i>Run Tests</a>
                 <a class="nav-link active" href="/results"><i class="fas fa-chart-bar me-1"></i>Results</a>
                 <a class="nav-link" href="/voice_record"><i class="fas fa-microphone me-1"></i>Voice Record</a>
             </div>
@@ -69,7 +69,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="fas fa-chart-bar me-2"></i>Test Results</h1>
             <div>
-                <a href="/run_tests" class="btn btn-success btn-lg">
+                <a href="#" onclick="goToConfigureFirst()" class="btn btn-success btn-lg">
                     <i class="fas fa-redo me-2"></i>Run Another Test
                 </a>
             </div>
@@ -477,7 +477,7 @@
         <!-- Action Buttons -->
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <a href="/run_tests" class="btn btn-primary btn-lg me-3">
+                <a href="#" onclick="goToConfigureFirst()" class="btn btn-primary btn-lg me-3">
                     <i class="fas fa-redo me-2"></i>
                     Run Another Test
                 </a>
@@ -512,6 +512,10 @@
             var metricsTab = new bootstrap.Tab(document.querySelector('#metrics-tab'))
             metricsTab.show()
         });
+
+        function goToConfigureFirst() {
+            window.location.href = '/configure';
+        }
     </script>
 </body>
 </html>
