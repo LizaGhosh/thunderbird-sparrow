@@ -1,10 +1,9 @@
-# Sparrow Dev Test – Project Requirements Analysis
+# Thunderbird - Sparrow
 
 ## 📋 Project Overview
 
 The Sparrow Dev Test is a production-ready evaluation framework for AI-powered processing of industrial maintenance voice notes. It transcribes inputs, generates structured outputs with large language models (LLMs), and calculates detailed metrics to assess response quality and reliability.
 
-## 🎯 Exercise Requirements Analysis
 
 ### 1. Evaluation Framework
 
@@ -174,20 +173,3 @@ The **Metrics Calculation Module** evaluates **Voice Note Parser** outputs by co
 - Scales to large datasets
 - Low memory footprint
 - Real-time dashboard updates
-
-## 🚀 Next Steps
-
-### Short Term
-- Add metrics: personnel assignment, tone assessment
-- Stability testing with paraphrased inputs
-- Expanded error taxonomy
-
-### Longer Term
-- Auto-prompt tuning via feedback
-- Cross-model benchmarking
-- Historical trend analysis
-
-### Deployment
-- Monitoring + alerting
-- REST API layer
-- Authentication & role-based access control

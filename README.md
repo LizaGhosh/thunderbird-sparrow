@@ -82,10 +82,6 @@ sparrrow/
 
 1. **Start the web server**
    ```bash
-   # Option 1: Using the frontend launcher
-   python frontend/start_web.py
-   
-   # Option 2: Using the root launcher
    python launch_web.py
    ```
 
@@ -171,33 +167,3 @@ The system generates structured JSON outputs with:
 - **Application Logs**: `backend/logs/app.log`
 - **Processing Logs**: Real-time progress tracking
 - **Error Logs**: Detailed error information and stack traces
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For issues and questions:
-1. Check the logs in `backend/logs/`
-2. Review the configuration in `backend/config/`
-3. Ensure API keys are properly set in `.env`
-4. Check that all dependencies are installed
-
-## 🔄 Version History
-
-- **v2.0**: Modular architecture with frontend/backend separation
-- **v1.0**: Initial implementation with basic voice processing
-
----
-
-**Note**: This project requires valid API keys for AI providers. Ensure your `.env` file is properly configured before running.
-
