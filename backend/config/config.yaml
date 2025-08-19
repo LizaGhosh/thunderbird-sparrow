@@ -1,10 +1,74 @@
-# Generated for this execution. Original will be restored after run.
+# Voice Note Parser Configuration
+# ================================
 
+# AI Provider Configuration
+# -------------------------
+# Available providers: claude, gemini
+# Claude: Anthropic's AI models (requires CLAUDE_API_KEY)
+# Gemini: Google's AI models (requires GEMINI_API_KEY)
 ai_provider: claude
-model: claude-3-opus-20240229
+
+# AI Model Selection
+# ------------------
+# Claude Models (Anthropic):
+#   - claude-3-5-sonnet-20241022: Latest Claude 3.5 Sonnet (recommended)
+#   - claude-3-opus-20240229: Claude 3 Opus (most capable, slower)
+#   - claude-3-5-haiku-20241022: Claude 3.5 Haiku (fastest, less capable)
+#   - claude-3-sonnet-20240229: Claude 3 Sonnet (balanced)
+#   - claude-3-haiku-20240307: Claude 3 Haiku (fast, efficient)
+#
+# Gemini Models (Google):
+#   - gemini-1.5-pro: Gemini 1.5 Pro (most capable)
+#   - gemini-1.5-flash: Gemini 1.5 Flash (fast, efficient)
+#   - gemini-1.0-pro: Gemini 1.0 Pro (stable, reliable)
+model: claude-3-5-sonnet-20241022
+
+# Temperature Settings
+# -------------------
+# Temperature controls randomness and creativity in AI responses:
+#   0.0: Most deterministic, consistent outputs (recommended for production)
+#   1.0: Maximum creativity, unpredictable outputs
 temperature: 0.0
+
+# Processing Configuration
+# -----------------------
+# Enable parallel processing for faster execution (may use more API calls)
 parallel_processing: false
+
+# Enable output validation using Pydantic schemas
 validate_outputs: true
+
+# Data Paths
+# -----------
+# Input and output directories for data processing
 inputs_dir: backend/data/inputs
 outputs_dir: backend/data/outputs
 logs_dir: backend/logs
+
+# Alternative Configuration Examples
+# =================================
+
+# Example 1: High-Creativity Setup
+# ai_provider: claude
+# model: claude-3-opus-20240229
+# temperature: 0.7
+
+# Example 2: Fast Processing Setup
+# ai_provider: gemini
+# model: gemini-1.5-flash
+# temperature: 0.1
+
+# Example 3: Balanced Production Setup
+# ai_provider: claude
+# model: claude-3-5-sonnet-20241022
+# temperature: 0.2
+
+# Example 4: Maximum Consistency Setup
+# ai_provider: claude
+# model: claude-3-5-sonnet-20241022
+# temperature: 0.0
+
+# Example 5: Gemini Production Setup
+# ai_provider: gemini
+# model: gemini-1.5-pro
+# temperature: 0.1
