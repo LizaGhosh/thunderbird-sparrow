@@ -1,0 +1,719 @@
+{
+  "work_item_triaging": [
+    {
+      "id": "wt_001",
+      "input": "Hey, this is Zach. I need an emergency work request for a leak on tunnel one.",
+      "expected_output": {
+        "work_requests": [{
+          "title": "Emergency leak repair - Tunnel Washer 1",
+          "description": "Zach reported a leak on tunnel washer 1 that requires emergency attention",
+          "status": "pending",
+          "asset_id": "tunnel-001",
+          "work_type_id": "emergency-001",
+          "assigned_to": null
+        }],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "explicit_category_override_urgency"
+    },
+    {
+      "id": "wt_002", 
+      "input": "Hey, I'd like to create a work request, the job will be assigned to Naveen. This is regarding CLM number 12. I see the door is not closing properly, it probably needs some adjustment or maybe some hydraulic cylinder. If Naveen you can look at it when you come fasting in the morning, I appreciate it.",
+      "expected_output": {
+        "work_requests": [{
+          "title": "Door closing issue - Dryer 12",
+          "description": "CLM dryer 12 door is not closing properly, may need adjustment or hydraulic cylinder replacement. Assigned to Naveen for morning review.",
+          "status": "pending", 
+          "asset_id": "dryer-012",
+          "work_type_id": null,
+          "assigned_to": "Naveen"
+        }],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "personnel_assignment_parsing"
+    },
+    {
+      "id": "wt_003",
+      "input": "Today is July 3rd, time is 5.55pm, we just got a call from the operator, the ironer number 4 is not working. We're putting a team together in Argentina, we're going to take a look at the machine, see what's going on. I'm accompanying them. After the inspecting the machine, the engineers find out that the sensor position is not right, they adjust the position of the sensor, and the woman is passing through, so this case is closed.",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "Ironer 4 not working - Investigation needed",
+          "comment": "Today is July 3rd, time is 5.55pm, we just got a call from the operator, the ironer number 4 is not working. We're putting a team together in Argentina, we're going to take a look at the machine, see what's going on. I'm accompanying them. After the inspecting the machine, the engineers find out that the sensor position is not right, they adjust the position of the sensor, and the woman is passing through, so this case is closed.",
+          "description": "Ironer 4 reported not working by operator on July 3rd at 5:55pm. Team assembled to investigate. Found sensor position incorrect and adjusted. Equipment now functioning properly.",
+          "status": "draft",
+          "asset_id": "ironer-004", 
+          "work_type_id": "urgent-002",
+          "assigned_to": null
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "default_to_work_order_urgency"
+    },
+    {
+      "id": "wt_004",
+      "input": "Hey, can you generate a work order for me? The asset is CLM dryers, lint collectors, and the engineer working on this is Rob. Rob needs to clean those lint collectors every day after the production leaves, and on two days that he is absent, Tom, another engineer, will be covering for the two days that Rob is off.",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "Daily lint collector cleaning - CLM dryers", 
+          "user_query": "Hey, can you generate a work order for me? The asset is CLM dryers, lint collectors, and the engineer working on this is Rob. Rob needs to clean those lint collectors every day after the production leaves, and on two days that he is absent, Tom, another engineer, will be covering for the two days that Rob is off.",
+          "description": "Daily cleaning of lint collectors on CLM dryers after production. Primary assignment to Rob with Tom covering during Rob's absence.",
+          "status": "draft",
+          "asset_id": null,
+          "work_type_id": "routine-003", 
+          "assigned_to": "Rob"
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "explicit_work_order_request"
+    },
+    {
+      "id": "wt_005",
+      "input": "Can you create a work request that we need an inspection on Tunnel 1?",
+      "expected_output": {
+        "work_requests": [{
+          "title": "Inspection needed - Tunnel Washer 1",
+          "description": "Inspection requested for Tunnel Washer 1",
+          "status": "pending",
+          "asset_id": "tunnel-001",
+          "work_type_id": null,
+          "assigned_to": null
+        }],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "work_request_with_inspection_mention"
+    },
+    {
+      "id": "wt_006",
+      "input": "Can you create an urgent work request to inspect a seal on Tunnel 2?",
+      "expected_output": {
+        "work_requests": [{
+          "title": "Urgent seal inspection - Tunnel Washer 2",
+          "description": "Urgent inspection requested for seal on Tunnel Washer 2", 
+          "status": "pending",
+          "asset_id": "tunnel-002",
+          "work_type_id": "urgent-002",
+          "assigned_to": null
+        }],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "urgency_with_inspection"
+    },
+    {
+      "id": "wt_007",
+      "input": "This is Sha, today is June 3rd, time is 7.05pm, we just got a call in the tunnel number 1, and the computer shows it's plugged, which means it's overfilled with water. So we go over there, and the team who is working on this is Sha, myself, and Dick and Jane. We found out the pocket number 1, it's flooded with two loads instead of one, and that's because of a jam, and the lemon is not moving forward because it jammed the passage, so we went through the back entrance, so we went inside and back in the tunnel, and we had to manually extract out that extra load in order to clear the passage. Finally, the overall project, it took about 40 minutes, and the mission was successful, and everything is back to normal.",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "Tunnel 1 overfilled - Water extraction needed",
+          "user_query": "This is Sha, today is June 3rd, time is 7.05pm, we just got a call in the tunnel number 1, and the computer shows it's plugged, which means it's overfilled with water. So we go over there, and the team who is working on this is Sha, myself, and Dick and Jane. We found out the pocket number 1, it's flooded with two loads instead of one, and that's because of a jam, and the lemon is not moving forward because it jammed the passage, so we went through the back entrance, so we went inside and back in the tunnel, and we had to manually extract out that extra load in order to clear the passage. Finally, the overall project, it took about 40 minutes, and the mission was successful, and everything is back to normal.",
+          "description": "Tunnel 1 reported overfilled with water on June 3rd at 7:05pm. Team (Sha, Dick, Jane) responded and found pocket 1 flooded with two loads due to jam. Manually extracted excess load through back entrance. Completed in 40 minutes, system restored to normal operation.",
+          "status": "draft",
+          "asset_id": "tunnel-001",
+          "work_type_id": "urgent-002", 
+          "assigned_to": null
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "detailed_completion_narrative"
+    },
+    {
+      "id": "wt_008",
+      "input": "Hey, we need to order the diaphragm for tunnel one and two",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": [{
+          "title": "Order diaphragms - Tunnel Washers 1 & 2",
+          "user_query": "Hey, we need to order the diaphragm for tunnel one and two",
+          "description": "Order diaphragm parts for Tunnel Washer 1 and Tunnel Washer 2",
+          "status": "draft", 
+          "asset_id": null,
+          "work_type_id": null,
+          "assigned_to": null
+        }]
+      },
+      "test_focus": "ordering_administrative_task"
+    },
+    {
+      "id": "wt_009",
+      "input": "Hi, I'd like to create a work order for ironer number one and three and the engineer on this is Naveen. He needs to change all the guide pins on the feeder side of the ironer.",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "Guide pin replacement - Ironer systems",
+          "user_query": "Hi, I'd like to create a work order for ironer number one and three and the engineer on this is Naveen. He needs to change all the guide pins on the feeder side of the ironer.",
+          "description": "Replace all guide pins on feeder side for ironer 1 and ironer 3. Assigned to Naveen.",
+          "status": "draft",
+          "asset_id": null,
+          "work_type_id": null,
+          "assigned_to": "Naveen"
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "multiple_assets_single_work_order"
+    },
+    {
+      "id": "wt_010",
+      "input": "Hey, this is Zach. I want to create three maintenance requests, each for a seal crack on dryers 12, 17, and 19. And then also just create a work order for some repair work we need on Tunnel 1.",
+      "expected_output": {
+        "work_requests": [
+          {
+            "title": "Seal crack repair - Dryer 12",
+            "description": "Zach reported seal crack on dryer 12 requiring maintenance",
+            "status": "pending",
+            "asset_id": "dryer-012", 
+            "work_type_id": null,
+            "assigned_to": null
+          },
+          {
+            "title": "Seal crack repair - Dryer 17", 
+            "description": "Zach reported seal crack on dryer 17 requiring maintenance",
+            "status": "pending",
+            "asset_id": null,
+            "work_type_id": null,
+            "assigned_to": null
+          },
+          {
+            "title": "Seal crack repair - Dryer 19",
+            "description": "Zach reported seal crack on dryer 19 requiring maintenance", 
+            "status": "pending",
+            "asset_id": null,
+            "work_type_id": null,
+            "assigned_to": null
+          }
+        ],
+        "work_orders": [{
+          "title": "Repair work needed - Tunnel Washer 1",
+          "user_query": "Hey, this is Zach. I want to create three maintenance requests, each for a seal crack on dryers 12, 17, and 19. And then also just create a work order for some repair work we need on Tunnel 1.",
+          "description": "Repair work needed on Tunnel Washer 1 as reported by Zach",
+          "status": "draft",
+          "asset_id": "tunnel-001",
+          "work_type_id": null,
+          "assigned_to": null
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "multiple_items_different_categories"
+    },
+    {
+      "id": "wt_011",
+      "input": "Emergency! The boiler is overheating and there's a critical safety hazard. Production has stopped.",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "EMERGENCY: Boiler overheating - Critical safety",
+          "user_query": "Emergency! The boiler is overheating and there's a critical safety hazard. Production has stopped.",
+          "description": "Emergency situation: boiler overheating creating critical safety hazard. Production stopped. Immediate response required.", 
+          "status": "draft",
+          "asset_id": null,
+          "work_type_id": "emergency-001",
+          "assigned_to": null
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "emergency_multiple_keywords"
+    },
+    {
+      "id": "wt_012",
+      "input": "Can you show me any work order that's open for CLM or for washer?",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "information_request_no_action"
+    },
+    {
+      "id": "wt_013", 
+      "input": "uh, so we had the pump down for like 2 hours maybe 3, had to replace the seal, Jim and Sarah worked on it, should be good now",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "Pump seal replacement - Downtime 2-3 hours",
+          "user_query": "uh, so we had the pump down for like 2 hours maybe 3, had to replace the seal, Jim and Sarah worked on it, should be good now",
+          "description": "Pump was down for 2-3 hours for seal replacement. Work completed by Jim and Sarah. Equipment should be operational.",
+          "status": "draft", 
+          "asset_id": null,
+          "work_type_id": null,
+          "assigned_to": null
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "casual_voice_completion_report"
+    },
+    {
+      "id": "wt_014",
+      "input": "Hi, can you show me all the schedules for tomorrow?",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [],
+        "inspection_tasks": [], 
+        "general_tasks": []
+      },
+      "test_focus": "question_no_work_item_creation"
+    },
+    {
+      "id": "wt_015",
+      "input": "Create an inspection task for dryer 22. Need to check for wear on the conveyor system and bearing alignment.",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [],
+        "inspection_tasks": [{
+          "title": "Conveyor and bearing inspection - Dryer 22",
+          "comment": "Create an inspection task for dryer 22. Need to check for wear on the conveyor system and bearing alignment.",
+          "description": "Inspection task for dryer 22: check conveyor system for wear and verify bearing alignment",
+          "status": "draft",
+          "asset_id": "dryer-022",
+          "work_type_id": null,
+          "assigned_to": null
+        }],
+        "general_tasks": []
+      },
+      "test_focus": "explicit_inspection_task"
+    },
+    {
+      "id": "wt_016",
+      "input": "low priority maintenance for tunnel 2, whenever someone has time to look at the door seals",
+      "expected_output": {
+        "work_requests": [{
+          "title": "Low priority door seal maintenance - Tunnel 2",
+          "description": "Low priority maintenance for Tunnel Washer 2 door seals, to be completed when time permits",
+          "status": "pending",
+          "asset_id": "tunnel-002",
+          "work_type_id": "low-004", 
+          "assigned_to": null
+        }],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "low_priority_assignment"
+    },
+    {
+      "id": "wt_017",
+      "input": "Scheduled preventive maintenance for next week on tunnel washer 1, Bob will handle it",
+      "expected_output": {
+        "work_requests": [{
+          "title": "Scheduled PM - Tunnel Washer 1",
+          "description": "Scheduled preventive maintenance for Tunnel Washer 1 next week, assigned to Bob",
+          "status": "pending", 
+          "asset_id": "tunnel-001",
+          "work_type_id": "routine-003",
+          "assigned_to": "Bob"
+        }],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "scheduled_pm_with_personnel"
+    },
+    {
+      "id": "wt_018",
+      "input": "machine 17 keeps jamming and I need John to look at it ASAP tomorrow morning",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "URGENT: Machine 17 jamming issue",
+          "comment": "machine 17 keeps jamming and I need John to look at it ASAP tomorrow morning",
+          "description": "Machine 17 experiencing repeated jamming, requires ASAP attention from John tomorrow morning",
+          "status": "draft",
+          "asset_id": null,
+          "work_type_id": "urgent-002",
+          "assigned_to": "John"
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "urgent_with_assignment_unmapped_asset"
+    },
+    {
+      "id": "wt_019",
+      "input": "There's a weird noise coming from dryer 12, might be the bearings, someone should check it out when they get a chance",
+      "expected_output": {
+        "work_requests": [{
+          "title": "Noise investigation - Dryer 12 bearings", 
+          "description": "Weird noise reported from dryer 12, possible bearing issue, needs investigation when convenient",
+          "status": "pending",
+          "asset_id": "dryer-012",
+          "work_type_id": null,
+          "assigned_to": null
+        }],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "vague_issue_default_classification"
+    },
+    {
+      "id": "wt_020",
+      "input": "Make sure to call the gardening company so they can clean up the weeds in the back",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": [{
+          "title": "Call gardening company - Weed cleanup",
+          "comment": "Make sure to call the gardening company so they can clean up the weeds in the back",
+          "description": "Contact gardening company to arrange weed cleanup in back area",
+          "status": "draft",
+          "asset_id": null, 
+          "work_type_id": null,
+          "assigned_to": null
+        }]
+      },
+      "test_focus": "vendor_coordination_task"
+    },
+    {
+      "id": "wt_021",
+      "input": "can you create inspection tasks for tunnel 1 and tunnel 2? need to verify water levels and check door alignment on both",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [],
+        "inspection_tasks": [
+          {
+            "title": "Water level and door inspection - Tunnel 1",
+            "comment": "can you create inspection tasks for tunnel 1 and tunnel 2? need to verify water levels and check door alignment on both", 
+            "description": "Inspection task for Tunnel Washer 1: verify water levels and check door alignment",
+            "status": "draft",
+            "asset_id": "tunnel-001",
+            "work_type_id": null,
+            "assigned_to": null
+          },
+          {
+            "title": "Water level and door inspection - Tunnel 2",
+            "comment": "can you create inspection tasks for tunnel 1 and tunnel 2? need to verify water levels and check door alignment on both",
+            "description": "Inspection task for Tunnel Washer 2: verify water levels and check door alignment", 
+            "status": "draft",
+            "asset_id": "tunnel-002",
+            "work_type_id": null,
+            "assigned_to": null
+          }
+        ],
+        "general_tasks": []
+      },
+      "test_focus": "multiple_inspection_tasks"
+    },
+    {
+      "id": "wt_022",
+      "input": "routine lubrication for all the equipment next Wednesday, Tom and Jane will split the work",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": [{
+          "title": "Routine lubrication - All equipment",
+          "comment": "routine lubrication for all the equipment next Wednesday, Tom and Jane will split the work",
+          "description": "Routine lubrication scheduled for all equipment next Wednesday, work split between Tom and Jane",
+          "status": "draft",
+          "asset_id": null,
+          "work_type_id": "routine-003",
+          "assigned_to": "Tom"
+        }]
+      },
+      "test_focus": "general_maintenance_task_with_multiple_personnel"
+    },
+    {
+      "id": "wt_023",
+      "input": "CRITICAL SAFETY ISSUE tunnel washer 1 is leaking steam everywhere production stopped immediately need emergency response",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "EMERGENCY: Critical steam leak - Tunnel 1",
+          "comment": "CRITICAL SAFETY ISSUE tunnel washer 1 is leaking steam everywhere production stopped immediately need emergency response",
+          "description": "CRITICAL SAFETY ISSUE: Tunnel Washer 1 leaking steam extensively, production stopped, emergency response required immediately",
+          "status": "draft", 
+          "asset_id": "tunnel-001",
+          "work_type_id": "emergency-001",
+          "assigned_to": null
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "critical_emergency_multiple_triggers"
+    },
+    {
+      "id": "wt_024",
+      "input": "Can I create a work order for tomorrow to clean the lunchroom?",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [{
+          "title": "Lunchroom cleaning - Scheduled tomorrow",
+          "comment": "Can I create a work order for tomorrow to clean the lunchroom?",
+          "description": "Lunchroom cleaning scheduled for tomorrow",
+          "status": "draft",
+          "asset_id": null,
+          "work_type_id": null,
+          "assigned_to": null
+        }],
+        "inspection_tasks": [],
+        "general_tasks": []
+      },
+      "test_focus": "facility_cleaning_work_order"
+    },
+    {
+      "id": "wt_025",
+      "input": "Create a general task to follow up with the engineers on the assigned cleaning process",
+      "expected_output": {
+        "work_requests": [],
+        "work_orders": [],
+        "inspection_tasks": [],
+        "general_tasks": [{
+          "title": "Follow up on cleaning process assignments",
+          "comment": "Create a general task to follow up with the engineers on the assigned cleaning process",
+          "description": "Follow up with engineers regarding assigned cleaning process tasks",
+          "status": "draft",
+          "asset_id": null,
+          "work_type_id": null,
+          "assigned_to": null
+        }]
+      },
+      "test_focus": "explicit_general_task_request"
+    }
+  ],
+  "closing_comment": [
+    {
+      "id": "cc_001",
+      "input": "So I just completed this work order and it took me about two hours and the parts that I was using was a couple of seals for the door and one sensor.",
+      "expected_output": {
+        "closing_comment": "Completed work order using door seals and one sensor. Work took approximately two hours to complete.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "work_duration_vs_downtime_distinction"
+    },
+    {
+      "id": "cc_002",
+      "input": "The job on dryer number 1-3 is completed. We replaced the part, ILC 200, it needed the programming on that was corrupted so we replaced it with the new unit and the old unit needs to go back to the manufacturer so they can reprogram it and send it back to us.",
+      "expected_output": {
+        "closing_comment": "Completed job on dryer number 1-3. Replaced ILC 200 unit due to corrupted programming. Old unit returned to manufacturer for reprogramming.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "equipment_replacement_with_return_process"
+    },
+    {
+      "id": "cc_003",
+      "input": "view description okay hi this is Peter so I was able to work on the dryer and we needed a new ILC on that ILC inline control 200 IB we need to order it from Jensen we use the last one and the machine is up and running no issues",
+      "expected_output": {
+        "closing_comment": "Peter completed work on dryer. Used last ILC inline control 200 IB unit, need to order replacement from Jensen. Machine is up and running with no issues.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "informal_transcription_with_inventory_note"
+    },
+    {
+      "id": "cc_004",
+      "input": "The schedule work to be done on tunnel washer is complete and everything is working fine.",
+      "expected_output": {
+        "closing_comment": "Scheduled work on tunnel washer completed. Everything is working fine.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "minimal_completion_statement"
+    },
+    {
+      "id": "cc_005",
+      "input": "Completed task.",
+      "expected_output": {
+        "closing_comment": "Task completed.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "extremely_minimal_completion"
+    },
+    {
+      "id": "cc_006",
+      "input": "Inspected press unit and identified loose bolts as the primary issue. Re-tightened all bolts to specification and restored equipment to operational status. Recommend implementing periodic bolt torque checks during routine maintenance to prevent recurrence.",
+      "expected_output": {
+        "closing_comment": "Inspected press unit and identified loose bolts as the primary issue. Re-tightened all bolts to specification and restored equipment to operational status. Recommend implementing periodic bolt torque checks during routine maintenance to prevent recurrence.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "detailed_inspection_with_recommendation"
+    },
+    {
+      "id": "cc_007",
+      "input": "The work on ironer 4 for replacing the gearbox was performed as planned. It took us a little bit longer to finish, so we were able to wrap it up in three hours. And the work was done from 4 a.m. in the morning until 7 a.m., and then the machine was handed over to the production to work on it.",
+      "expected_output": {
+        "closing_comment": "Completed gearbox replacement on ironer 4 as planned. Work took three hours to complete, performed from 4 a.m. to 7 a.m. Machine handed over to production and ready for operation.",
+        "actual_downtime_hours": 3.0
+      },
+      "test_focus": "work_duration_equals_downtime_scenario"
+    },
+    {
+      "id": "cc_008",
+      "input": "The work done on ironer number 1, 2 and 3 to install the motor, gearbox, the motor and the pump combo on 2, 3 and 4, it was done.",
+      "expected_output": {
+        "closing_comment": "Completed installation of motor, gearbox, and pump combo on ironers 1, 2, 3, and 4.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "multiple_equipment_installation"
+    },
+    {
+      "id": "cc_009",
+      "input": "Chain replacement for lift number 2 completed by Fernando on Sunday. System checked and verified - everything intact and working properly. Technician recommends upgrading to more heavy duty chain to prevent future breakage as current chain is not sufficiently sturdy.",
+      "expected_output": {
+        "closing_comment": "Chain replacement for lift number 2 completed by Fernando on Sunday. System checked and verified - everything intact and working properly. Technician recommends upgrading to more heavy duty chain to prevent future breakage as current chain is not sufficiently sturdy.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "detailed_completion_with_technician_recommendation"
+    },
+    {
+      "id": "cc_010",
+      "input": "ILC programming completed for Jensen-Dryer 1.6. Peter successfully reprogrammed unit on Saturday, August 9. Work order closed with no further action required.",
+      "expected_output": {
+        "closing_comment": "ILC programming completed for Jensen-Dryer 1.6. Peter successfully reprogrammed unit on Saturday, August 9. Work order closed with no further action required.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "programming_completion_with_date_specifics"
+    },
+    {
+      "id": "cc_011",
+      "input": "Ironer two maintenance completed with Peter and Fernando approximately one week ago. All work satisfactorily finished.",
+      "expected_output": {
+        "closing_comment": "Ironer two maintenance completed with Peter and Fernando approximately one week ago. All work satisfactorily finished.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "delayed_completion_report"
+    },
+    {
+      "id": "cc_012",
+      "input": "Completed work order for new programs for baby diapers and babes for super silent machine. All systems working properly. Will monitor formula to ensure no corruption and consistent production results. Job completed successfully.",
+      "expected_output": {
+        "closing_comment": "Completed work order for new programs for baby diapers and babes for super silent machine. All systems working properly. Will monitor formula to ensure no corruption and consistent production results. Job completed successfully.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "programming_work_with_monitoring_plan"
+    },
+    {
+      "id": "cc_013",
+      "input": "Completed ILC software updates for Jensen-Dryer system 1.3 and 1.1. Uploaded latest version and verified all systems are communicating properly.",
+      "expected_output": {
+        "closing_comment": "Completed ILC software updates for Jensen-Dryer system 1.3 and 1.1. Uploaded latest version and verified all systems are communicating properly.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "software_update_with_verification"
+    },
+    {
+      "id": "cc_014",
+      "input": "Project on theta number 3 completed. All belts replaced.",
+      "expected_output": {
+        "closing_comment": "Project on theta number 3 completed. All belts replaced.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "simple_mechanical_replacement"
+    },
+    {
+      "id": "cc_015",
+      "input": "The crack seal on Jensen Dryer 1-2 is completed, we used one set of seal, we still have 6 set of seals in the inventory, so we are ok with that, tested and checked, everything seems to be working fine now.",
+      "expected_output": {
+        "closing_comment": "Completed crack seal repair on Jensen Dryer 1-2 using one set of seals. 6 sets remain in inventory. Equipment tested and working fine.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "repair_with_inventory_tracking"
+    },
+    {
+      "id": "cc_016",
+      "input": "Completed gearbox replacement on Saturday around 8 PM. Equipment operating normally. Note from Art recommends using more heavy duty chain for future maintenance.",
+      "expected_output": {
+        "closing_comment": "Completed gearbox replacement on Saturday around 8 PM. Equipment operating normally. Note from Art recommends using more heavy duty chain for future maintenance.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "evening_completion_with_future_recommendation"
+    },
+    {
+      "id": "cc_017",
+      "input": "Completed work order for iron number four third fold issue. Equipment tested and operating normally. No documentation required.",
+      "expected_output": {
+        "closing_comment": "Completed work order for iron number four third fold issue. Equipment tested and operating normally. No documentation required.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "issue_specific_repair_no_documentation"
+    },
+    {
+      "id": "cc_018",
+      "input": "Installed blower motor on dryer 2-5. Installation completed and equipment is working fine.",
+      "expected_output": {
+        "closing_comment": "Installed blower motor on dryer 2-5. Installation completed and equipment is working fine.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "straightforward_component_installation"
+    },
+    {
+      "id": "cc_019",
+      "input": "ILC software for both dryers updated to latest version. All systems verified working properly.",
+      "expected_output": {
+        "closing_comment": "ILC software for both dryers updated to latest version. All systems verified working properly.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "multi_equipment_software_update"
+    },
+    {
+      "id": "cc_020",
+      "input": "Completed belt replacement work on theta folder. Project finished.",
+      "expected_output": {
+        "closing_comment": "Completed belt replacement work on theta folder. Project finished.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "simple_project_completion"
+    },
+    {
+      "id": "cc_021",
+      "input": "System was down for 4 hours while we replaced the main drive motor. Everything tested and running normally now.",
+      "expected_output": {
+        "closing_comment": "Replaced main drive motor with system down for 4 hours. Everything tested and running normally now.",
+        "actual_downtime_hours": 4.0
+      },
+      "test_focus": "explicit_downtime_mention"
+    },
+    {
+      "id": "cc_022",
+      "input": "Had to shut down the production line for 2.5 hours to replace the conveyor belt. New belt installed and line is back up and running.",
+      "expected_output": {
+        "closing_comment": "Replaced conveyor belt with production line shut down for 2.5 hours. New belt installed and line is back up and running.",
+        "actual_downtime_hours": 2.5
+      },
+      "test_focus": "production_shutdown_for_repair"
+    },
+    {
+      "id": "cc_023",
+      "input": "Pump repair took 6 hours to complete but the system was only offline for about 45 minutes while we swapped the pumps. Tested everything and it's working great.",
+      "expected_output": {
+        "closing_comment": "Completed pump repair in 6 hours with system offline for 45 minutes during pump swap. Everything tested and working great.",
+        "actual_downtime_hours": 0.75
+      },
+      "test_focus": "work_duration_vs_system_offline_time"
+    },
+    {
+      "id": "cc_024",
+      "input": "Emergency repair on the steam line. We worked through the night for 8 hours but managed to keep the plant running on backup systems. No production downtime.",
+      "expected_output": {
+        "closing_comment": "Completed emergency repair on steam line. Worked 8 hours through the night while maintaining plant operation on backup systems. No production downtime.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "long_repair_no_downtime_due_to_backup"
+    },
+    {
+      "id": "cc_025",
+      "input": "Replaced three sensors on the control panel. Work was done during scheduled maintenance window from 2 AM to 6 AM, so no impact to production.",
+      "expected_output": {
+        "closing_comment": "Replaced three sensors on control panel during scheduled maintenance window from 2 AM to 6 AM. No impact to production.",
+        "actual_downtime_hours": null
+      },
+      "test_focus": "scheduled_window_no_production_impact"
+    }
+  ]
+}

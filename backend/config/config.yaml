@@ -1,0 +1,10 @@
+# Generated for this execution. Original will be restored after run.
+
+ai_provider: claude
+model: claude-3-opus-20240229
+temperature: 0.0
+parallel_processing: false
+validate_outputs: true
+inputs_dir: backend/data/inputs
+outputs_dir: backend/data/outputs
+logs_dir: backend/logs

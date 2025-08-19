@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run Tests - Voice Note Parser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .test-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+        }
+        .test-card.selected {
+            border: 3px solid #667eea;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8ecff 100%);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-microphone-alt me-2"></i>
+                Sparrow Dev Test
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                <a class="nav-link" href="/configure"><i class="fas fa-cog me-1"></i>Configure</a>
+                <a class="nav-link active" href="/run_tests"><i class="fas fa-play me-1"></i>Run Tests</a>
+                <a class="nav-link" href="/results"><i class="fas fa-chart-bar me-1"></i>Results</a>
+                <a class="nav-link" href="/voice_record"><i class="fas fa-microphone me-1"></i>Voice Record</a>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="text-center mb-5">
+                    <h2><i class="fas fa-play-circle me-2"></i>Choose Test Type</h2>
+                    <p class="lead text-muted">Select the type of test you want to run</p>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card test-card h-100" id="short-test-card" onclick="selectTest('short_test')">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-flask fa-3x text-primary"></i>
+                                </div>
+                                <h4 class="card-title">Short Test</h4>
+                                <p class="card-text text-muted">
+                                    Quick validation with 3 entries from each workflow type.
+                                    Perfect for testing configuration changes and quick validation.
+                                </p>
+                                <div class="mt-3">
+                                    <span class="badge bg-success me-2">Fast</span>
+                                    <span class="badge bg-info me-2">3 entries each</span>
+                                    <span class="badge bg-warning">Development</span>
+                                </div>
+                                <div class="mt-3 small text-muted">
+                                    <i class="fas fa-clock me-1"></i>~30 seconds
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <div class="card test-card h-100" id="full-dataset-card" onclick="selectTest('full_dataset')">
+                            <div class="card-body text-center p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-database fa-3x text-primary"></i>
+                                </div>
+                                <h4 class="card-title">Full Dataset</h4>
+                                <p class="card-text text-muted">
+                                    Complete evaluation with all 25 entries from each workflow.
+                                    Comprehensive testing for production validation.
+                                </p>
+                                <div class="mt-3">
+                                    <span class="badge bg-primary me-2">Complete</span>
+                                    <span class="badge bg-info me-2">25 entries each</span>
+                                    <span class="badge bg-success">Production</span>
+                                </div>
+                                <div class="mt-3 small text-muted">
+                                    <i class="fas fa-clock me-1"></i>~5-10 minutes
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4" id="execution-section" style="display: none;">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                <h5><i class="fas fa-rocket me-2"></i>Ready to Execute</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <p class="mb-3">
+                                    <strong>Selected Test:</strong> 
+                                    <span id="selected-test-name" class="badge bg-primary"></span>
+                                </p>
+                                <form method="POST" action="/execute" id="execute-form">
+                                    <input type="hidden" name="test_type" id="test-type-input">
+                                    <button type="submit" class="btn btn-primary btn-lg me-3" id="execute-btn">
+                                        <i class="fas fa-play me-2"></i>
+                                        Run Test
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-lg" onclick="resetSelection()">
+                                        <i class="fas fa-undo me-2"></i>
+                                        Change Selection
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section (Hidden by default) -->
+                <div class="row mt-4" id="progress-section" style="display: none;">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-line me-2"></i>Execution Progress</h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Current Step Display -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span id="current-step">Initializing...</span>
+                                    </div>
+                                </div>
+
+                                <!-- Input Processing Progress (Green Bar) -->
+                                <div class="mb-3" id="input-progress">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted">
+                                            Processing input <span id="current-input">0</span> of <span id="total-inputs">0</span>
+                                        </small>
+                                        <small class="text-muted" id="input-percentage">0%</small>
+                                    </div>
+                                    <div class="progress" style="height: 20px;">
+                                        <div id="input-progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Live Status -->
+                                <div class="mt-3">
+                                    <div id="status-message" class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <span id="status-text">Ready to start execution...</span>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons (Hidden until completion) -->
+                                <div class="text-center mt-3" id="completion-actions" style="display: none;">
+                                    <a href="/results" class="btn btn-success btn-lg me-3" id="view-results-btn">
+                                        <i class="fas fa-chart-bar me-2"></i>
+                                        View Results
+                                    </a>
+                                    <button type="button" class="btn btn-primary btn-lg" onclick="resetToSelection()">
+                                        <i class="fas fa-redo me-2"></i>
+                                        Run Another Test
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-info-circle me-2"></i>Test Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Short Test Benefits:</h6>
+                                        <ul class="small">
+                                            <li>Quick validation of configuration changes</li>
+                                            <li>Fast feedback loop for prompt tuning</li>
+                                            <li>Cost-effective for development</li>
+                                            <li>Ideal for iterative improvements</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Full Dataset Benefits:</h6>
+                                        <ul class="small">
+                                            <li>Comprehensive performance evaluation</li>
+                                            <li>Production-ready validation</li>
+                                            <li>Complete metric analysis</li>
+                                            <li>Edge case identification</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedTest = null;
+        let progressInterval = null;
+
+        function selectTest(testType) {
+            // Remove previous selection
+            document.querySelectorAll('.test-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select current card
+            if (testType === 'short_test') {
+                document.getElementById('short-test-card').classList.add('selected');
+                document.getElementById('selected-test-name').textContent = 'Short Test (3 entries each)';
+            } else {
+                document.getElementById('full-dataset-card').classList.add('selected');
+                document.getElementById('selected-test-name').textContent = 'Full Dataset (25 entries each)';
+            }
+            
+            selectedTest = testType;
+            document.getElementById('test-type-input').value = testType;
+            document.getElementById('execution-section').style.display = 'block';
+        }
+
+        function resetSelection() {
+            document.querySelectorAll('.test-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('execution-section').style.display = 'none';
+            document.getElementById('progress-section').style.display = 'none';
+            selectedTest = null;
+            
+            // Stop progress updates
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        function resetToSelection() {
+            // Hide progress section and show execution section
+            document.getElementById('progress-section').style.display = 'none';
+            document.getElementById('execution-section').style.display = 'block';
+            
+            // Stop progress updates
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        function updateProgress() {
+            fetch('/execute/status')
+                .then(response => response.json())
+                .then(data => {
+                    // Update current step
+                    document.getElementById('current-step').textContent = data.current_step;
+
+                    // Update input progress
+                    if (data.total_inputs > 0) {
+                        const inputProgress = Math.round((data.current_input / data.total_inputs) * 100);
+                        document.getElementById('input-progress-bar').style.width = inputProgress + '%';
+                        document.getElementById('input-percentage').textContent = inputProgress + '%';
+                        document.getElementById('current-input').textContent = data.current_input;
+                        document.getElementById('total-inputs').textContent = data.total_inputs;
+                    }
+
+                    // Update status message
+                    if (data.logs && data.logs.length > 0) {
+                        const latestLog = data.logs[data.logs.length - 1];
+                        document.getElementById('status-text').textContent = latestLog.message;
+                        
+                        // Update status message styling based on log type
+                        const statusMessage = document.getElementById('status-message');
+                        statusMessage.className = 'alert mb-0';
+                        
+                        if (latestLog.type === 'success') {
+                            statusMessage.classList.add('alert-success');
+                        } else if (latestLog.type === 'error') {
+                            statusMessage.classList.add('alert-danger');
+                        } else if (latestLog.type === 'start') {
+                            statusMessage.classList.add('alert-warning');
+                        } else {
+                            statusMessage.classList.add('alert-info');
+                        }
+                    }
+
+                    // Show completion actions when done
+                    if (data.status === 'completed') {
+                        document.getElementById('completion-actions').style.display = 'block';
+                        document.getElementById('status-message').className = 'alert alert-success mb-0';
+                        document.getElementById('status-text').textContent = '✅ Execution completed successfully!';
+                        
+                        // Stop progress updates
+                        if (progressInterval) {
+                            clearInterval(progressInterval);
+                            progressInterval = null;
+                        }
+                    } else if (data.status === 'failed') {
+                        document.getElementById('completion-actions').style.display = 'block';
+                        document.getElementById('status-message').className = 'alert alert-danger mb-0';
+                        document.getElementById('status-text').textContent = '❌ Execution failed. Please try again.';
+                        
+                        // Stop progress updates
+                        if (progressInterval) {
+                            clearInterval(progressInterval);
+                            progressInterval = null;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching progress:', error);
+                });
+        }
+
+        function startExecution() {
+            // Show progress section and hide execution section
+            document.getElementById('execution-section').style.display = 'none';
+            document.getElementById('progress-section').style.display = 'block';
+            
+            // Reset progress display
+            document.getElementById('current-step').textContent = 'Initializing...';
+            document.getElementById('input-progress-bar').style.width = '0%';
+            document.getElementById('input-percentage').textContent = '0%';
+            document.getElementById('current-input').textContent = '0';
+            document.getElementById('total-inputs').textContent = '0';
+            document.getElementById('completion-actions').style.display = 'none';
+            document.getElementById('status-message').className = 'alert alert-info mb-0';
+            document.getElementById('status-text').textContent = '🚀 Starting execution...';
+            
+            // Start progress updates
+            progressInterval = setInterval(updateProgress, 500);
+            
+            // Initial update
+            updateProgress();
+        }
+
+        // Handle form submission
+        document.getElementById('execute-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            // Disable execute button
+            document.getElementById('execute-btn').disabled = true;
+            document.getElementById('execute-btn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Starting...';
+            
+            fetch('/execute', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    startExecution();
+                } else {
+                    alert('Error starting execution: ' + data.message);
+                    // Re-enable button
+                    document.getElementById('execute-btn').disabled = false;
+                    document.getElementById('execute-btn').innerHTML = '<i class="fas fa-play me-2"></i>Run Test';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error starting execution. Please try again.');
+                // Re-enable button
+                document.getElementById('execute-btn').disabled = false;
+                document.getElementById('execute-btn').innerHTML = '<i class="fas fa-play me-2"></i>Run Test';
+            });
+        });
+    </script>
+</body>
+</html>

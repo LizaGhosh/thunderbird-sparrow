@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results Dashboard - Voice Note Parser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .metric-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-2px);
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 25px 25px 0 0;
+            margin-right: 5px;
+            padding: 12px 25px;
+        }
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        .table-responsive {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .tab-content > .tab-pane {
+            display: none;
+        }
+        .tab-content > .active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-microphone-alt me-2"></i>
+                Sparrow Dev Test
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                <a class="nav-link" href="/configure"><i class="fas fa-cog me-1"></i>Configure</a>
+                <a class="nav-link" href="/run_tests"><i class="fas fa-play me-1"></i>Run Tests</a>
+                <a class="nav-link active" href="/results"><i class="fas fa-chart-bar me-1"></i>Results</a>
+                <a class="nav-link" href="/voice_record"><i class="fas fa-microphone me-1"></i>Voice Record</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-chart-bar me-2"></i>Test Results</h1>
+            <div>
+                <a href="/run_tests" class="btn btn-success btn-lg">
+                    <i class="fas fa-redo me-2"></i>Run Another Test
+                </a>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs mb-4" id="resultsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics" type="button" role="tab" aria-controls="metrics" aria-selected="true">
+                    <i class="fas fa-chart-pie me-2"></i>Metrics Overview
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="false">
+                    <i class="fas fa-table me-2"></i>Detailed Outputs
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="resultsTabContent">
+            <!-- Metrics Tab -->
+            <div class="tab-pane fade show active" id="metrics" role="tabpanel" aria-labelledby="metrics-tab">
+
+
+                <!-- Work Item Triaging Metrics -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4><i class="fas fa-tasks me-2"></i>Work Item Triaging Metrics</h4>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    {% if metrics.work_triaging %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card metric-card text-center">
+                            <div class="card-body">
+                                <div class="metric-value text-warning">{{ metrics.work_triaging.total_inputs }}</div>
+                                <div class="metric-label">Total Inputs</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card metric-card text-center">
+                            <div class="card-body">
+                                <div class="metric-value text-success">{{ metrics.work_triaging.schema_compliance }}%</div>
+                                <div class="metric-label">Schema Validity</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card metric-card text-center">
+                            <div class="card-body">
+                                <div class="metric-value text-info">{{ metrics.work_triaging.processing_success }}%</div>
+                                <div class="metric-label">Processing Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card metric-card text-center">
+                            <div class="card-body">
+                                <div class="metric-value text-warning">{{ metrics.work_triaging.average_accuracy }}%</div>
+                                <div class="metric-label">Accuracy</div>
+                                <small class="text-muted">{{ metrics.work_triaging.accuracy_formula }}</small>
+                                
+                                <!-- Accuracy Details Toggle -->
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#wt-accuracy-details-results" aria-expanded="false" aria-controls="wt-accuracy-details-results">
+                                        <i class="fas fa-info-circle me-1"></i>Show Details
+                                    </button>
+                                </div>
+                                
+                                <!-- Accuracy Breakdown Details -->
+                                <div class="collapse mt-3" id="wt-accuracy-details-results">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Accuracy Breakdown</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if metrics.work_triaging.accuracy_breakdown %}
+                                            <div class="row text-center">
+                                                <div class="col-6 mb-2">
+                                                    <div class="border rounded p-2">
+                                                        <div class="fw-bold text-success">{{ "%.1f"|format(metrics.work_triaging.accuracy_breakdown.category.average) }}%</div>
+                                                        <small class="text-muted">Category Match</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 mb-2">
+                                                    <div class="border rounded p-2">
+                                                        <div class="fw-bold text-success">{{ "%.1f"|format(metrics.work_triaging.accuracy_breakdown.asset.average) }}%</div>
+                                                        <small class="text-muted">Asset Match</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 mb-2">
+                                                    <div class="border rounded p-2">
+                                                        <div class="fw-bold text-success">{{ "%.1f"|format(metrics.work_triaging.accuracy_breakdown.status.average) }}%</div>
+                                                        <small class="text-muted">Status Match</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 mb-2">
+                                                    <div class="border rounded p-2">
+                                                        <div class="fw-bold text-success">{{ "%.1f"|format(metrics.work_triaging.accuracy_breakdown.work_type.average) }}%</div>
+                                                        <small class="text-muted">Work Type Match</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="border rounded p-2">
+                                                        <div class="fw-bold text-success">{{ "%.1f"|format(metrics.work_triaging.accuracy_breakdown.assignment.average) }}%</div>
+                                                        <small class="text-muted">Assignment Match</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="text-muted text-center">
+                                                <i class="fas fa-info-circle me-1"></i>No breakdown data available
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Closing Comments Metrics -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4><i class="fas fa-comment-dots me-2"></i>Closing Comments Metrics</h4>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    {% if metrics.closing_comments %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card metric-card text-center">
+                            <div class="card-body">
+                                <div class="metric-value text-warning">{{ metrics.closing_comments.total_inputs }}</div>
+                                <div class="metric-label">Total Inputs</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card metric-card text-center">
+                            <div class="card-body">
+                                <div class="metric-value text-success">{{ metrics.closing_comments.schema_compliance }}%</div>
+                                <div class="metric-label">Schema Validity</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card metric-card text-center">
+                            <div class="card-body">
+                                <div class="metric-value text-info">{{ metrics.closing_comments.processing_success }}%</div>
+                                <div class="metric-label">Processing Success Rate</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <div class="card metric-card text-center">
+                            <div class="card-body">
+                                <div class="metric-value text-warning">{{ metrics.closing_comments.average_accuracy }}%</div>
+                                <div class="metric-label">Accuracy</div>
+                                <small class="text-muted">{{ metrics.closing_comments.accuracy_formula }}</small>
+                                
+                                <!-- Accuracy Details Toggle -->
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-warning" type="button" data-bs-toggle="collapse" data-bs-target="#cc-accuracy-details-results" aria-expanded="false" aria-controls="cc-accuracy-details-results">
+                                        <i class="fas fa-info-circle me-1"></i>Show Details
+                                    </button>
+                                </div>
+                                
+                                <!-- Accuracy Breakdown Details -->
+                                <div class="collapse mt-3" id="cc-accuracy-details-results">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Accuracy Breakdown</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if metrics.closing_comments.accuracy_breakdown %}
+                                            <div class="row text-center">
+                                                <div class="col-6 mb-2">
+                                                    <div class="border rounded p-2">
+                                                        <div class="fw-bold text-success">{{ "%.1f"|format(metrics.closing_comments.accuracy_breakdown.downtime.average) }}%</div>
+                                                        <small class="text-muted">Downtime Match</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 mb-2">
+                                                    <div class="border rounded p-2">
+                                                        <div class="fw-bold text-success">{{ "%.1f"|format(metrics.closing_comments.accuracy_breakdown.comment_population.average) }}%</div>
+                                                        <small class="text-muted">Comment Population</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="text-muted text-center">
+                                                <i class="fas fa-info-circle me-1"></i>No breakdown data available
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Metric Explanations -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-info-circle me-2"></i>Metric Explanations</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Why These Metrics Matter:</h6>
+                                        <ul class="small">
+                                            <li><strong>Total Inputs:</strong> Total number of inputs processed for each category</li>
+                                            <li><strong>Schema Validity:</strong> Percentage of outputs that comply with expected schema</li>
+                                            <li><strong>Processing Success Rate:</strong> Overall success rate of processing operations</li>
+                                            <li><strong>Accuracy:</strong> Field-by-field accuracy scores from CSV validation</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Production Impact:</h6>
+                                        <ul class="small">
+                                            <li><strong>High Accuracy:</strong> Reduced manual intervention, faster processing</li>
+                                            <li><strong>Low Accuracy:</strong> Increased errors, maintenance delays, safety risks</li>
+                                            <li><strong>Schema Compliance:</strong> Ensures data quality and system reliability</li>
+                                            <li><strong>Processing Success:</strong> Indicates system stability and error handling</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Details Tab -->
+            <div class="tab-pane fade" id="details" role="tabpanel" aria-labelledby="details-tab">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4><i class="fas fa-table me-2"></i>Detailed Output Tables</h4>
+                        <p class="text-muted">View the complete results from your test execution</p>
+                    </div>
+                </div>
+
+                <!-- Work Triaging Table -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-tasks me-2"></i>Work Triaging Results</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if work_triaging_table %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Test ID</th>
+                                                <th>Test Focus</th>
+                                                <th>Input Preview</th>
+                                                <th>System Output Type</th>
+                                                <th>Expected Output Type</th>
+                                                <th>Type Match</th>
+                                                <th>System Title</th>
+                                                <th>Expected Title</th>
+                                                <th>System Asset ID</th>
+                                                <th>Expected Asset ID</th>
+                                                <th>Asset Match</th>
+                                                <th>System Assigned To</th>
+                                                <th>Expected Assigned To</th>
+                                                <th>Assigned Match</th>
+                                                <th>System Work Type ID</th>
+                                                <th>Expected Work Type ID</th>
+                                                <th>Work Type Match</th>
+                                                <th>System Status</th>
+                                                <th>Expected Status</th>
+                                                <th>Status Match</th>
+                                                <th>System Description</th>
+                                                <th>Expected Description</th>
+                                                <th>Has User Query</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in work_triaging_table %}
+                                            <tr>
+                                                <td><code>{{ row.Test_ID }}</code></td>
+                                                <td>{{ row.Test_Focus }}</td>
+                                                <td><small class="text-muted">{% if row.Input_Preview and row.Input_Preview is string and row.Input_Preview != 'N/A' %}{{ row.Input_Preview[:100] }}{% if row.Input_Preview|length > 100 %}...{% endif %}{% else %}N/A{% endif %}</small></td>
+                                                <td><span class="badge bg-primary">{{ row.System_Output_Type }}</span></td>
+                                                <td><span class="badge bg-secondary">{{ row.Expected_Output_Type }}</span></td>
+                                                <td>{{ row.Type_Match | safe }}</td>
+                                                <td>{{ row.System_Title }}</td>
+                                                <td>{{ row.Expected_Title }}</td>
+                                                <td>{{ row.System_Asset_ID }}</td>
+                                                <td>{{ row.Expected_Asset_ID }}</td>
+                                                <td>{{ row.Asset_Match | safe }}</td>
+                                                <td>{{ row.System_Assigned_To }}</td>
+                                                <td>{{ row.Expected_Assigned_To }}</td>
+                                                <td>{{ row.Assigned_Match | safe }}</td>
+                                                <td>{{ row.System_Work_Type_ID }}</td>
+                                                <td>{{ row.Expected_Work_Type_ID }}</td>
+                                                <td>{{ row.Work_Type_Match | safe }}</td>
+                                                <td>{{ row.System_Status }}</td>
+                                                <td>{{ row.Expected_Status }}</td>
+                                                <td>{{ row.Status_Match | safe }}</td>
+                                                <td><small>{% if row.System_Description and row.System_Description is string and row.System_Description != 'N/A' %}{{ row.System_Description[:80] }}{% if row.System_Description|length > 80 %}...{% endif %}{% else %}N/A{% endif %}</small></td>
+                                                <td><small>{% if row.Expected_Description and row.Expected_Description is string and row.Expected_Description != 'N/A' %}{{ row.Expected_Description[:80] }}{% if row.Expected_Description|length > 80 %}...{% endif %}{% else %}N/A{% endif %}</small></td>
+                                                <td><span class="badge bg-info">{{ row.Has_User_Query }}</span></td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Work triaging table not available. Please run the tests first.
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Closing Comments Table -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-comment-dots me-2"></i>Closing Comments Results</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if closing_comments_table %}
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Test ID</th>
+                                                <th>Test Focus</th>
+                                                <th>Input Preview</th>
+                                                <th>System Comment</th>
+                                                <th>Expected Comment</th>
+                                                <th>System Downtime Hours</th>
+                                                <th>Expected Downtime Hours</th>
+                                                <th>Downtime Match</th>
+                                                <th>Processing Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in closing_comments_table %}
+                                            <tr>
+                                                <td><code>{{ row.Test_ID }}</code></td>
+                                                <td>{{ row.Test_Focus }}</td>
+                                                <td><small class="text-muted">{% if row.Input_Preview and row.Input_Preview is string and row.Input_Preview != 'N/A' %}{{ row.Input_Preview[:100] }}{% if row.Input_Preview|length > 100 %}...{% endif %}{% else %}N/A{% endif %}</small></td>
+                                                <td><small>{% if row.System_Comment and row.System_Comment is string and row.System_Comment != 'N/A' %}{{ row.System_Comment[:80] }}{% if row.System_Comment|length > 80 %}...{% endif %}{% else %}N/A{% endif %}</small></td>
+                                                <td><small class="text-muted">{% if row.Expected_Comment and row.Expected_Comment is string and row.Expected_Comment != 'N/A' %}{{ row.Expected_Comment[:80] }}{% if row.Expected_Comment|length > 80 %}...{% endif %}{% else %}N/A{% endif %}</small></td>
+                                                <td>
+                                                    {% if row.System_Downtime_Hours %}
+                                                    <span class="badge bg-info">{{ row.System_Downtime_Hours }}h</span>
+                                                    {% else %}
+                                                    <span class="badge bg-secondary">N/A</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if row.Expected_Downtime_Hours %}
+                                                    <span class="badge bg-info">{{ row.Expected_Downtime_Hours }}h</span>
+                                                    {% else %}
+                                                    <span class="badge bg-secondary">N/A</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ row.Downtime_Match | safe }}</td>
+                                                <td><span class="badge bg-success">{{ row.Processing_Status }}</span></td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Closing comments table not available. Please run the tests first.
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="/run_tests" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-redo me-2"></i>
+                    Run Another Test
+                </a>
+                <a href="/configure" class="btn btn-secondary btn-lg me-3">
+                    <i class="fas fa-cog me-2"></i>
+                    Change Configuration
+                </a>
+                <a href="/" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-home me-2"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Ensure tabs work properly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap tabs
+            var triggerTabList = [].slice.call(document.querySelectorAll('#resultsTabs button'))
+            triggerTabList.forEach(function (triggerEl) {
+                var tabTrigger = new bootstrap.Tab(triggerEl)
+                
+                triggerEl.addEventListener('click', function (event) {
+                    event.preventDefault()
+                    tabTrigger.show()
+                })
+            })
+            
+            // Show metrics tab by default
+            var metricsTab = new bootstrap.Tab(document.querySelector('#metrics-tab'))
+            metricsTab.show()
+        });
+    </script>
+</body>
+</html>

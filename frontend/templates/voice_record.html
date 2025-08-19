@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recording - Sparrow Dev Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .recording-controls {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        .record-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: #dc3545;
+            color: white;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .record-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .record-button.recording {
+            background: #28a745;
+            animation: pulse 1.5s infinite;
+        }
+        .record-button.processing {
+            background: #ffc107;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .status-indicator {
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+        .status-idle { background: #6c757d; }
+        .status-recording { background: #dc3545; }
+        .status-processing { background: #ffc107; }
+        .status-completed { background: #28a745; }
+        .status-error { background: #dc3545; }
+
+        
+        #llmOutput {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-microphone-alt me-2"></i>
+                Sparrow Dev Test
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                <a class="nav-link" href="/configure"><i class="fas fa-cog me-1"></i>Configure</a>
+                <a class="nav-link" href="/run_tests"><i class="fas fa-play me-1"></i>Run Tests</a>
+                <a class="nav-link" href="/results"><i class="fas fa-chart-bar me-1"></i>Results</a>
+                <a class="nav-link active" href="/voice_record"><i class="fas fa-microphone me-1"></i>Voice Record</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1><i class="fas fa-microphone me-2"></i>Voice Recording & Processing</h1>
+                <p class="lead text-muted">Record your voice and get AI transcription and analysis</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> AI model and temperature settings can be configured in the 
+                    <a href="/configure" class="alert-link">Configure</a> tab
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Recording Controls -->
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="recording-controls text-center">
+                    <h3 class="mb-4"><i class="fas fa-microphone me-2"></i>Voice Recording</h3>
+                    
+                    <!-- Status Indicator -->
+                    <div id="statusIndicator" class="status-indicator status-idle">
+                        <i class="fas fa-circle me-2"></i>Ready to Record
+                    </div>
+                    
+                    <!-- Record Button -->
+                    <button id="recordButton" class="record-button mb-3" onclick="toggleRecording()">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    
+                    <!-- Recording Options -->
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <label for="duration" class="form-label">Duration (seconds)</label>
+                            <select id="duration" class="form-select">
+                                <option value="5">5 seconds</option>
+                                <option value="10" selected>10 seconds</option>
+                                <option value="15">15 seconds</option>
+                                <option value="20">20 seconds</option>
+                                <option value="30">30 seconds</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="whisperModel" class="form-label">Whisper Model</label>
+                            <select id="whisperModel" class="form-select">
+                                <option value="tiny">Tiny (fastest)</option>
+                                <option value="base" selected>Base (balanced)</option>
+                                <option value="small">Small (better)</option>
+                                <option value="medium">Medium (best)</option>
+                                <option value="large">Large (highest quality)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="workType" class="form-label">Work Type</label>
+                            <select id="workType" class="form-select">
+                                <option value="work_triaging" selected>Work Triaging</option>
+                                <option value="closing_comments">Closing Comments</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div id="progressContainer" class="mt-3" style="display: none;">
+                        <div class="progress">
+                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small class="mt-2 d-block">Recording in progress...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="row" style="display: none;">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0"><i class="fas fa-check-circle me-2"></i>Processing Complete</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Transcription -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-file-text me-2"></i>Transcription</h5>
+                            <div class="alert alert-info">
+                                <div id="transcriptionText"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- LLM Output -->
+                        <div class="mb-4">
+                            <h5><i class="fas fa-brain me-2"></i>AI Analysis (Pydantic Validated)</h5>
+                            <div class="alert alert-secondary">
+                                <pre id="llmOutput" class="mb-0" style="font-size: 12px; max-height: 400px; overflow-y: auto;"></pre>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="text-center">
+                            <button class="btn btn-success btn-lg me-3" onclick="createAnother()">
+                                <i class="fas fa-plus me-2"></i>Create Another
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Section -->
+        <div id="errorSection" class="row" style="display: none;">
+            <div class="col-md-8 mx-auto">
+                <div class="alert alert-danger">
+                    <h4><i class="fas fa-exclamation-triangle me-2"></i>Processing Error</h4>
+                    <div id="errorMessage"></div>
+                    <button class="btn btn-outline-danger mt-3" onclick="resetRecording()">
+                        <i class="fas fa-redo me-2"></i>Try Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let isRecording = false;
+        let recordingInterval = null;
+        let currentDuration = 10;
+        let progress = 0;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        
+        function toggleRecording() {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+        
+        function startRecording() {
+            // Request microphone permission and start recording
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    isRecording = true;
+                    currentDuration = parseInt(document.getElementById('duration').value);
+                    progress = 0;
+                    
+                    // Update UI
+                    document.getElementById('recordButton').classList.add('recording');
+                    document.getElementById('recordButton').innerHTML = '<i class="fas fa-stop"></i>';
+                    document.getElementById('statusIndicator').className = 'status-indicator status-recording';
+                    document.getElementById('statusIndicator').innerHTML = '<i class="fas fa-circle me-2"></i>Recording...';
+                    document.getElementById('progressContainer').style.display = 'block';
+                    
+                    // Initialize MediaRecorder
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                        processRecording();
+                    };
+                    
+                    // Start recording
+                    mediaRecorder.start();
+                    
+                    // Start progress bar
+                    recordingInterval = setInterval(() => {
+                        progress += (100 / currentDuration);
+                        document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
+                        
+                        if (progress >= 100) {
+                            stopRecording();
+                        }
+                    }, 1000);
+                    
+                    console.log('Recording started for', currentDuration, 'seconds');
+                })
+                .catch(error => {
+                    console.error('Microphone access error:', error);
+                    if (error.name === 'NotAllowedError') {
+                        alert('❌ Microphone access denied! Please allow microphone access in your browser and try again.');
+                    } else if (error.name === 'NotFoundError') {
+                        alert('❌ No microphone found! Please check your microphone connection.');
+                    } else {
+                        alert(`❌ Error: ${error.message}`);
+                    }
+                });
+        }
+        
+        function stopRecording() {
+            if (!mediaRecorder || !isRecording) return;
+            
+            isRecording = false;
+            
+            // Clear interval
+            if (recordingInterval) {
+                clearInterval(recordingInterval);
+                recordingInterval = null;
+            }
+            
+            // Update UI
+            document.getElementById('recordButton').classList.remove('recording');
+            document.getElementById('recordButton').classList.add('processing');
+            document.getElementById('recordButton').innerHTML = '<i class="fas fa-spinner"></i>';
+            document.getElementById('statusIndicator').className = 'status-indicator status-processing';
+            document.getElementById('statusIndicator').innerHTML = '<i class="fas fa-circle me-2"></i>Processing...';
+            
+            // Stop recording
+            mediaRecorder.stop();
+        }
+        
+        function processRecording() {
+            if (audioChunks.length === 0) {
+                showError('No audio data recorded. Please try again.');
+                return;
+            }
+            
+            const workType = document.getElementById('workType').value;
+            const whisperModel = document.getElementById('whisperModel').value;
+            
+            // Convert audio chunks to blob
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            
+            // Create FormData to send audio file
+            const formData = new FormData();
+            formData.append('audio', audioBlob, 'recording.wav');
+            formData.append('work_type', workType);
+            formData.append('whisper_model', whisperModel);
+            
+            // Send audio data to backend
+            fetch('/api/process_voice', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showResults(data);
+                } else {
+                    showError(data.error);
+                }
+            })
+            .catch(error => {
+                showError('Failed to process voice recording: ' + error.message);
+            });
+        }
+        
+        function showResults(data) {
+            // Update UI
+            document.getElementById('recordButton').classList.remove('processing');
+            document.getElementById('recordButton').innerHTML = '<i class="fas fa-microphone"></i>';
+            document.getElementById('statusIndicator').className = 'status-indicator status-completed';
+            document.getElementById('statusIndicator').innerHTML = '<i class="fas fa-circle me-2"></i>Completed';
+            document.getElementById('progressContainer').style.display = 'none';
+            
+            // Populate results
+            document.getElementById('transcriptionText').textContent = data.transcription.text;
+            document.getElementById('llmOutput').textContent = JSON.stringify(data.llm_output, null, 2);
+            
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('errorSection').style.display = 'none';
+        }
+        
+        function showError(message) {
+            // Update UI
+            document.getElementById('recordButton').classList.remove('processing');
+            document.getElementById('recordButton').innerHTML = '<i class="fas fa-microphone"></i>';
+            document.getElementById('statusIndicator').className = 'status-indicator status-error';
+            document.getElementById('statusIndicator').innerHTML = '<i class="fas fa-circle me-2"></i>Error';
+            document.getElementById('progressContainer').style.display = 'none';
+            
+            // Show error
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+        
+        function resetRecording() {
+            // Reset UI
+            document.getElementById('recordButton').classList.remove('recording', 'processing');
+            document.getElementById('recordButton').innerHTML = '<i class="fas fa-microphone"></i>';
+            document.getElementById('statusIndicator').className = 'status-indicator status-idle';
+            document.getElementById('statusIndicator').innerHTML = '<i class="fas fa-circle me-2"></i>Ready to Record';
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('errorSection').style.display = 'none';
+            
+            // Reset progress
+            progress = 0;
+            document.getElementById('progressBar').style.width = '0%';
+        }
+        
+        function createAnother() {
+            resetRecording();
+        }
+        
+
+        
+
+        
+
+        
+
+    </script>
+</body>
+</html>

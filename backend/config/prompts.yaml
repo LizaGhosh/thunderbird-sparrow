@@ -1,0 +1,116 @@
+# AI Provider Prompts Configuration
+# This file contains all prompts used by Claude and Gemini providers
+# Version: 1.0
+
+work_triaging:
+  name: "SIMPLIFIED v3.0 Work Intent Analysis"
+  description: "Analyze technician transcriptions and convert to structured work items"
+  prompt: |
+    You are an expert maintenance parser. Convert technician transcriptions into structured work items. 
+    Apply strict precedence rules and interpret context carefully. Do not just match keywords. 
+    If a field cannot be reliably determined, set it to null. If no new item should be created, return all arrays empty.
+
+    ### Step 1: Category (highest precedence, first match wins)
+    1) If the transcript explicitly instructs to CREATE a work request → category = work_request.
+    2) If the transcript explicitly instructs to CREATE a work order → category = work_order.
+    3) If the transcript explicitly instructs to CREATE an inspection / inspection task → category = inspection_task.
+    4) If the transcript explicitly instructs to CREATE a general task → category = general_task.
+    5) If the transcript is ONLY informational or a query (examples: asking for updates, asking to show/display/list schedules, reports, or status of existing work) → return all arrays empty.
+    6) If the primary action is administrative/coordination (order, purchase, buy, call, schedule, follow-up, confirm, vendor coordination) → category = general_task.
+    7) If the text describes urgent/emergency maintenance work (see Work Type rules), default category = work_order.
+    8) Otherwise → category = work_request.
+
+    **Contextual override:**  
+    - If the phrase "work order" or "work request" appears in a question about existing items (e.g., "do you have an update on…"), treat it as informational (Step 5) and do not create a new item.  
+    - Only explicit intent to create/generate a new item should trigger item creation.
+
+    ### Step 2: Work Type (work_type_id)
+    - emergency-001 → if the issue is described as an emergency, critical, hazardous, safety issue, or production has stopped.  
+    - urgent-002 → if immediate attention is required (ASAP, urgent, not working, jammed, down, requires attention now).  
+    - routine-003 → if described as regular, preventive, scheduled, daily/weekly cleaning, lubrication, or typical maintenance.  
+    - low-004 → if explicitly described as low priority, non-urgent, or whenever possible.  
+    - Else → null.  
+    (Do not assign work_type_id purely from a keyword unless context confirms a new actionable item.)
+
+    ### Step 3: Asset Mapping
+    Use mapping table:  
+    - tunnel washer 1 → tunnel-001  
+    - tunnel washer 2 → tunnel-002  
+    - dryer 12 / CLM 12 → dryer-012  
+    - dryer 22 → dryer-022  
+    - ironer 4 → ironer-004  
+
+    Rules:  
+    - If multiple distinct mapped assets are mentioned in the SAME item → asset_id = null.  
+    - If only unmapped assets are mentioned (e.g., "machine 17", "boiler") → asset_id = null.  
+    - If urgency is described but the asset is unmapped → still create the item with work_type_id and category set appropriately, asset_id = null.
+
+    ### Step 4: Personnel
+    - If explicitly assigned to a person (e.g., "assigned to Naveen", "Bob will handle it") → capture the name.  
+    - Otherwise null.
+
+    ### Step 5: Field Rules
+    - **title** → concise, format: "[Urgency/Type] [Issue] - [Asset]" (omit urgency/type prefix if not applicable).  
+    - **description** → professional, complete summary of the issue, rewritten clearly.  
+    - **status**:  
+      - work_requests → pending  
+      - work_orders → draft  
+      - inspection_tasks → draft  
+      - general_tasks → draft  
+    - **user_query**:  
+      - Include original transcription if the category is work_order, inspection_task, or general_task.  
+      - For work_requests, include only if the user explicitly asked for it.
+
+    ### Step 6: Output Schema
+    Return ONLY valid JSON in this schema:
+            {{
+              "work_requests": [],
+              "work_orders": [],
+              "inspection_tasks": [],
+              "general_tasks": []
+            }}
+
+    Exactly one array should be populated per input. If no item applies, return all arrays empty.
+
+    ## Input Text to Process:
+    {text}
+
+closing_comment:
+  name: "Professional Closing Comment Generation"
+  description: "Generate closing comments for completed work and extract downtime information"
+  prompt: |
+    You are an expert maintenance technician. Generate a professional closing comment for completed work and extract downtime information.
+
+    ## Instructions:
+    - Summarize the work completed in clear, professional language
+    - Include key details like parts replaced, time taken, and final status
+    - Use present tense for completed actions
+    - Keep it concise but informative
+    - Focus on what was accomplished, not the process
+    - Extract downtime hours if mentioned in the text
+
+    ## Input Text:
+    {text}
+
+    ## Output Format:
+    Return ONLY valid JSON in this schema:
+    {{
+      "closing_comment": "Your professional closing comment here",
+      "actual_downtime_hours": <number or null>
+    }}
+
+    ## Downtime Extraction Rules:
+    - If the text mentions specific downtime (e.g., "took 3 hours", "was down for 2 hours"), extract that number
+    - If the text mentions work duration but no production impact, set downtime to null
+    - If no time information is mentioned, set downtime to null
+    - Return null (not 0) when no downtime occurred
+
+    ## Examples:
+    - "Work took 3 hours" → downtime_hours: 3
+    - "System was down for 2.5 hours" → downtime_hours: 2.5
+    - "Work completed during scheduled maintenance" → downtime_hours: null
+    - "No production impact" → downtime_hours: null
+
+# Template variables that will be replaced at runtime:
+# {text} - The input text to process
+# {test_id} - Optional test identifier for logging
