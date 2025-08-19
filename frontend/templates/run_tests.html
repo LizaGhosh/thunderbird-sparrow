@@ -229,23 +229,11 @@
         let progressInterval = null;
 
         function selectTest(testType) {
-            // Remove previous selection
-            document.querySelectorAll('.test-card').forEach(card => {
-                card.classList.remove('selected');
-            });
+            // Store the selected test type in sessionStorage
+            sessionStorage.setItem('selectedTestType', testType);
             
-            // Select current card
-            if (testType === 'short_test') {
-                document.getElementById('short-test-card').classList.add('selected');
-                document.getElementById('selected-test-name').textContent = 'Short Test (3 entries each)';
-            } else {
-                document.getElementById('full-dataset-card').classList.add('selected');
-                document.getElementById('selected-test-name').textContent = 'Full Dataset (25 entries each)';
-            }
-            
-            selectedTest = testType;
-            document.getElementById('test-type-input').value = testType;
-            document.getElementById('execution-section').style.display = 'block';
+            // Redirect to configure page first
+            window.location.href = '/configure?redirect=run_tests';
         }
 
         function resetSelection() {
@@ -394,6 +382,38 @@
                 document.getElementById('execute-btn').innerHTML = '<i class="fas fa-play me-2"></i>Run Test';
             });
         });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's a selected test type from sessionStorage
+            const selectedTestType = sessionStorage.getItem('selectedTestType');
+            if (selectedTestType) {
+                // Automatically select the test that was chosen
+                selectTestFromStorage(selectedTestType);
+                // Clear the stored selection
+                sessionStorage.removeItem('selectedTestType');
+            }
+        });
+
+        function selectTestFromStorage(testType) {
+            // Remove previous selection
+            document.querySelectorAll('.test-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Select current card
+            if (testType === 'short_test') {
+                document.getElementById('short-test-card').classList.add('selected');
+                document.getElementById('selected-test-name').textContent = 'Short Test (3 entries each)';
+            } else {
+                document.getElementById('full-dataset-card').classList.add('selected');
+                document.getElementById('selected-test-name').textContent = 'Full Dataset (25 entries each)';
+            }
+            
+            selectedTest = testType;
+            document.getElementById('test-type-input').value = testType;
+            document.getElementById('execution-section').style.display = 'block';
+        }
     </script>
 </body>
 </html>

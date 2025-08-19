@@ -125,6 +125,22 @@
                                 </div>
                             </div>
                         </form>
+                        
+                        <!-- Run Test Button (shown after redirect from run_tests page) -->
+                        {% if request.args.get('redirect') == 'run_tests' %}
+                        <div class="row mt-3">
+                            <div class="col-12 text-center">
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Configuration saved!</strong> You can now run your test.
+                                </div>
+                                <a href="/run_tests" class="btn btn-success btn-lg">
+                                    <i class="fas fa-play me-2"></i>
+                                    Go to Run Tests
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
 
