@@ -278,7 +278,7 @@ def create_comparison_tables(results: Dict[str, Any]) -> None:
     from ..config.config import config
     
     # Load expected outputs
-    expected_outputs_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'instructions', 'Thunderbird-Take-Home-Attachment-B.json')
+    expected_outputs_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'dataset', 'Thunderbird-Take-Home-Attachment-B.json')
     try:
         with open(expected_outputs_file, 'r') as f:
             expected_data = json.load(f)

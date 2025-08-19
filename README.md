@@ -1,4 +1,4 @@
-# Voice Note Parser - Industrial Maintenance
+# Thunderbird Sparrow - Industrial Maintenance
 
 An AI-powered voice note parsing system designed for industrial maintenance workflows. This application processes voice recordings and converts them into structured maintenance requests, work orders, and closing comments.
 
@@ -17,7 +17,7 @@ An AI-powered voice note parsing system designed for industrial maintenance work
 ## 🏗️ Project Structure
 
 ```
-sparrrow/
+thunderbird-sparrow/
 ├── backend/                 # Python backend logic
 │   ├── config/             # Configuration management
 │   ├── core/               # Core AI processing modules
@@ -31,7 +31,7 @@ sparrrow/
 │   ├── templates/          # HTML templates
 │   ├── app.py              # Flask application
 │   └── start_web.py        # Web server launcher
-├── instructions/            # Reference data
+├── dataset/                 # Reference data
 ├── venv/                   # Python virtual environment (ignored by git)
 ├── .env                    # Environment variables (ignored by git)
 ├── .gitignore             # Git ignore rules
@@ -51,8 +51,8 @@ sparrrow/
 ### Setup
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd sparrrow
+   git clone https://github.com/LizaGhosh/thunderbird-sparrow.git
+   cd thunderbird-sparrow
    ```
 
 2. **Create virtual environment**

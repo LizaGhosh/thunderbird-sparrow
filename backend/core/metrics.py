@@ -211,7 +211,7 @@ class MetricsCalculator:
         """Load expected outputs from Attachment B JSON file."""
         try:
             project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            expected_file = os.path.join(project_root, 'instructions', 'Thunderbird-Take-Home-Attachment-B.json')
+            expected_file = os.path.join(project_root, 'dataset', 'Thunderbird-Take-Home-Attachment-B.json')
             
             with open(expected_file, 'r') as f:
                 return json.load(f)

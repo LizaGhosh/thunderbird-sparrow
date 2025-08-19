@@ -21,7 +21,7 @@ ai_provider: claude
 #   - gemini-1.5-pro: Gemini 1.5 Pro (most capable)
 #   - gemini-1.5-flash: Gemini 1.5 Flash (fast, efficient)
 #   - gemini-1.0-pro: Gemini 1.0 Pro (stable, reliable)
-model: claude-3-5-sonnet-20241022
+model: claude-3-opus-20240229
 
 # Temperature Settings
 # -------------------
